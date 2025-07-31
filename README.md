@@ -14,7 +14,17 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
 
 ## Configuration
 
-there's an example of the correct environment file in .env.example.
+create a .env file with the following content:
+
+```
+AUTH_SECRET="" # use "openssl rand -base64 32"
+AUTH_URL=https://apis.roblox.com/oauth/v1/
+ROBLOX_ID=
+ROBLOX_SECRET=
+ROBLOX_REDIRECT=http://localhost:3000/api/auth/callback
+NODE_ENV=development
+```

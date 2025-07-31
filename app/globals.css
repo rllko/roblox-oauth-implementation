@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark, winter;
+}
+
+:root {
+  --foreground-rgb: 0,0,0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255,255,255
+  }
+}
+
+body {
+  color: rgb((var(--foreground-rgb)));
+  font-size: 16px;
+  padding: 1rem;
+}
