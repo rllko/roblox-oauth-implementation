@@ -1,5 +1,5 @@
 import React from "react";
-import { logout } from "../actions";
+import { logout } from "../lib/actions";
 
 const LogoutForm = () => {
   return (

@@ -1,6 +1,3 @@
-import { getSession } from "../actions";
-import { SessionData } from "./session";
-
 export interface UserInfo {
     sub: string,
     name: string,
@@ -8,11 +5,14 @@ export interface UserInfo {
     created_at: string,
     profile: string,
     picture: string,
+}
+
+export interface UserAuthAttributes {
     refresh_token: string,
     access_token: string,
     expires_in: number;
+    expires_at: number;
 }
-
 
 interface RefreshTokenResponse {
     access_token: string;
@@ -20,7 +20,6 @@ interface RefreshTokenResponse {
     expires_in: number;
     token_type: string;
 }
-
 
 export interface OauthToken {
     access_token: string,
@@ -33,13 +32,14 @@ export interface OauthToken {
 
 export const refreshRobloxToken = async (refreshToken: string): Promise<RefreshTokenResponse> => {
     const body = new URLSearchParams({
-        client_id: process.env.ROBLOX_CLIENT_ID as string,
+        client_id: process.env.ROBLOX_ID as string,
         grant_type: "refresh_token",
         refresh_token: refreshToken,
-        client_secret: process.env.ROBLOX_CLIENT_SECRET as string,
+        client_secret: process.env.ROBLOX_SECRET as string,
     }).toString()
 
     const response = await fetch(`${process.env.AUTH_URL}/token`, {
+        cache: "no-store",
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -71,12 +71,7 @@ export const fetchToken = async (code: string): Promise<OauthToken> => {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         method: "POST",
         body,
-    }).then(async (res) => {
-        const resp = await res.json()
-        return resp;
-
-    })
-
+    }).then(async (res) => await res.json())
 }
 
 export const fetchUserProfile = async (access_token: string): Promise<UserInfo> => {
@@ -86,12 +81,7 @@ export const fetchUserProfile = async (access_token: string): Promise<UserInfo> 
             "Content-Type": "application/x-www-form-urlencoded",
             Authorization: `Bearer ${access_token}`
         },
-    }).then(async (res) => {
-        const resp = await res.json()
-        console.log(resp);
-        return resp;
-
-    })
+    }).then(async (res) => await res.json())
 }
 
 export const revokeUserSession = async (access_token: string): Promise<UserInfo> => {

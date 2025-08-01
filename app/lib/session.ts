@@ -1,14 +1,13 @@
 import { SessionOptions } from "iron-session"
+import { UserAuthAttributes } from "./roblox-oauth";
 
 export interface SessionData {
     userId?: string,
     username?: string,
-    prefferedUsername?: string
-    refreshToken?: string;
-    accessToken: string;
-    expiresAt?: number
-    isLoggedIn?: boolean;
-    img?: string
+    preferredUsername?: string
+    picture?: string;
+    profile?: string
+    oauth?: UserAuthAttributes;
 }
 
 export const sessionOptions: SessionOptions = {

@@ -1,25 +1,26 @@
 "use server"
 
 import { getIronSession } from "iron-session";
-import { sessionOptions, SessionData } from "./lib/session";
+import { sessionOptions, SessionData } from "@/app/lib/session";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { revokeUserSession, UserInfo } from "./lib/roblox-oauth";
+import { revokeUserSession, UserAuthAttributes, UserInfo } from "@/app/lib/roblox-oauth";
 
 export const getSession = async () => {
     const session = await getIronSession<SessionData>(await cookies(), sessionOptions)
     return session;
 }
-export const login = async (userInfo: UserInfo) => {
+
+export const login = async (userInfo: UserInfo, auth: UserAuthAttributes) => {
     const session = await getSession();
 
-    session.prefferedUsername = userInfo.preferred_username;
+    session.preferredUsername = userInfo.preferred_username;
     session.username = userInfo.name;
     session.userId = userInfo.sub;
-    session.img = userInfo.picture;
-    session.isLoggedIn = true;
-    session.refreshToken = userInfo.refresh_token
-    session.accessToken = userInfo.access_token
+    session.picture = userInfo.picture;
+    session.profile = userInfo.profile;
+
+    session.oauth = auth;
 
     await session.save();
 
@@ -27,11 +28,11 @@ export const login = async (userInfo: UserInfo) => {
 export const logout = async () => {
     const session = await getSession();
 
-    if (!session.isLoggedIn) {
+    if (!session.userId) {
         return null;
     }
 
-    await revokeUserSession(session.accessToken)
+    await revokeUserSession(session.oauth?.access_token as string)
 
     session.destroy();
 

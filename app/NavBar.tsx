@@ -1,29 +1,33 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 import LogoutForm from "./components/LogoutForm";
-import { getSession } from "./actions";
+import useUser from "./lib/useUser";
 
-const NavBar = async () => {
-  const session = await getSession();
+const NavBar = () => {
+  const { isLoading, user } = useUser();
+
   return (
-    <div className="navbar bg-base-100 shadow-sm bg-gray-300 flex justify-between">
+    <div className="navbar shadow-sm bg-gray-300 flex justify-between">
       <div className="flex-none">
         <Link href="/" className="btn btn-square btn-ghost">
           Home
         </Link>
       </div>
       <div className="flex">
-        {!session.userId && (
+        {(!user || isLoading) && (
           <Link href="/api/providers/roblox" className="btn">
             Login
           </Link>
         )}
-        {session.userId && (
+
+        {user && !isLoading && (
           <div className="flex align-middle">
-            <p className="m-auto">{session.username}</p>
+            <p className="m-auto">{user.name}</p>
             <Image
-              src={session.img!}
+              src={user.picture!}
               width={100}
               height={100}
               alt="profile-picture"

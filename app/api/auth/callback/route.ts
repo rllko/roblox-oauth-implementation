@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { login } from "@/app/actions";
+import { login } from "@/app/lib/actions";
 import { redirect } from "next/navigation";
-import { fetchToken, fetchUserProfile, UserInfo } from "@/app/lib/roblox-oauth";
+import { fetchToken, fetchUserProfile, UserAuthAttributes, UserInfo } from "@/app/lib/roblox-oauth";
 
 export async function GET(req: NextRequest) {
     const code = req.nextUrl.searchParams.get("code")
@@ -23,15 +23,20 @@ export async function GET(req: NextRequest) {
     const {
         access_token,
         refresh_token,
-        expires_in
+        expires_in,
+
     } = await fetchToken(code);
 
     const user: UserInfo = await fetchUserProfile(access_token);
 
-    user.refresh_token = refresh_token;
-    user.expires_in = expires_in;
+    const auth: UserAuthAttributes = {
+        access_token,
+        refresh_token,
+        expires_in,
+        expires_at: Date.now() + (expires_in * 1000),
+    }
 
-    await login(user)
+    await login(user, auth)
 
     return redirect("/");
 }
